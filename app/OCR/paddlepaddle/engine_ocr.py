@@ -19,7 +19,7 @@ class EngineOCR:
         file_name = str(uuid.uuid4()) + ".jpg"
         cv2.imwrite(f"static/outputs/{file_name}", image)
 
-        result = self.ocr.ocr(image, cls=True)
+        result = self.ocr.ocr(image)
         print("Resultado do OCR:", result)
         plate_text = self.get_plates(result)
         if plate_text:

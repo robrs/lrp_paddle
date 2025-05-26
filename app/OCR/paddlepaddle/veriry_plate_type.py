@@ -17,7 +17,7 @@ class VerifyPlateType:
         roi = self.image[0 : int(h * 0.3), :]  # região superior da placa
         roi_gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY) if len(roi.shape) == 3 else roi
         roi_bgr = cv2.cvtColor(roi_gray, cv2.COLOR_GRAY2BGR)
-        ocr_result = self.ocr.ocr(roi_bgr, cls=True)
+        ocr_result = self.ocr.ocr(roi_bgr)
         # for line in ocr_result:
         #   for det in line:
         #      if det and len(det) > 1:
