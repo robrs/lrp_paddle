@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    container_name: lpr_app
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data 
+    networks:
+      - lpr_network
+
+networks:
+  lpr_network:
+    driver: bridge
+ 
