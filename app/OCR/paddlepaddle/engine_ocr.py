@@ -16,8 +16,11 @@ class EngineOCR:
             print("Imagem inválida ou não carregada.")
             return ""
 
+        import os
+        output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../static/outputs"))
+        os.makedirs(output_dir, exist_ok=True)
         file_name = str(uuid.uuid4()) + ".jpg"
-        cv2.imwrite(f"static/outputs/{file_name}", image)
+        cv2.imwrite(os.path.join(output_dir, file_name), image)
 
         result = self.ocr.ocr(image, cls=True)
         print("Resultado do OCR:", result)
