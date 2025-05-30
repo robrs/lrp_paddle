@@ -1,7 +1,9 @@
-import uuid
 import re
-import cv2
 import numpy as np
+
+from app.services.preprocess import Preprocess
+from utils.image_utils import save_image
+
 
 class EngineOCR:
 
@@ -10,27 +12,26 @@ class EngineOCR:
         self.ocr = OCR
 
     def run(self, image):
+      
+        images_list = self.generate_images(image)
+        for key, image in images_list.items():
 
-        # Verifica se a imagem é válida
-        if image is None or not isinstance(image, (np.ndarray, list)):
-            print("Imagem inválida ou não carregada.")
-            return ""
+            if image is None or not isinstance(image, (np.ndarray, list)):
+                print("Imagem inválida ou não carregada.")
+                continue
 
-        import os
-        output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../static/outputs"))
-        os.makedirs(output_dir, exist_ok=True)
-        file_name = str(uuid.uuid4()) + ".jpg"
-        cv2.imwrite(os.path.join(output_dir, file_name), image)
+            save_image(image, f"image-{key}-")  # Salva a imagem processada para depuração
 
-        result = self.ocr.ocr(image, cls=True)
-        print("Resultado do OCR:", result)
-        plate_text = self.get_plates(result)
-        if plate_text:
-            return plate_text
-        else:
-            print("Nenhuma placa detectada.")
-            return ""
- 
+            result = self.ocr.ocr(image, cls=True)
+            print("Resultado do OCR:", result)
+            plate_text = self.get_plates(result)
+            if plate_text:
+                print(f"Placa detectada: {plate_text}")
+                return plate_text
+            else:
+                print("Nenhuma placa detectada com confiança suficiente.")
+                continue
+
     def get_plates(self, result):
         # Extrai todas as detecções do resultado
         plates = []
@@ -66,7 +67,6 @@ class EngineOCR:
                 print("Nenhuma placa detectada com confiança suficiente.")
                 return ""
 
-   
     def clean_plate_text(self, text):
 
         # apenas numeros e letras
@@ -106,4 +106,11 @@ class EngineOCR:
 
         return text
 
+    def generate_images(self, image):
 
+        image_process = Preprocess.preprocess_image(image)
+        image_negative = Preprocess.process_image_negative(image)
+
+        images_list = {"processed": image_process, "negative": image_negative}
+
+        return images_list
